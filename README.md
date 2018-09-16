@@ -29,22 +29,24 @@ but that's okay.)
 
 So for simplicity, as long you're using the Rust Regex matcher you're doing it right.
 
+This assignment is vauge on purpose. Feel free to implement things as long as you handle all errors. The answer to most questions you may have about the specification will be: Do something resonable.
+
 ### Input
-TODO
+As input we receive 2 command lines argument from the user, a `pattern` and a `root_dir`. Any other number of arguments is an error. The pattern must be a valid Rust Regex, and root_dir must be a valid directory. Otherwise these are errors.
 
 ### Output
+We print file paths, one per line, which match the `pattern` to stdout.
 File path order does not matter, chose whichever order is easiest for you to implement.
+There is many places where errors could occur, please exit the program and report the error gracefully, i.e. do not use panic or expect. All errors must be written to stderr.
 
-### Design and implementation
+## Design and implementation
 Your code is expected to be separated into logical functions, each doing one task. Please use common sense software
 engineering practices. Please see the `Grading Policy` section of the classe's website under `homework assigments`
 
-Hints, tips, and requirements:
-#### Regexes
-Please use the [Regex Crate](https://docs.rs/regex/1.0.5/regex/) For Regular expressions
-#### Directory traversal and reading
-Use the function `std::fs::read_dir` for traversing directory entries.
-#### Paths
+### Regexes
+Please use the [Regex Crate](https://docs.rs/regex/1.0.5/regex/) for regular expressions.
+
+### Paths
 The `Path` type represents OS paths/files/directories, this type is unsized, meaning it is not adequate to pass around
 functions on it's own. Instead we will use `PathBuf` for our functions.
 
@@ -61,13 +63,13 @@ the methods "inhereted" from Path [here](https://doc.rust-lang.org/std/path/stru
 let pathbuf: PathBuf = ...;
 pathbuf.is_dir(); // Just works
 ```
-#### Functions to use.
+### Functions to use.
 In general, any function on the standard library is fair game to use. You may only use external crates specified in the
 homework. Do NOT use any other external crates. Feel free to use functions from external crates that are specified in
 the assignment however.
 
 Of interest to you, may be the following functions:
-```
+```rust
 std::env::args()
 std::fs::read_dir()
 Regex method is_match()
@@ -75,8 +77,28 @@ Path/Pathbuf method to_string_lossy()
 Vector method extend() and push()
 ```
 
-#### Dealing With Errors:
-Many of the filesystem functions we will be using return Result<_>, this can quickly get out of hand. TODO
+### Dealing With Errors:
+Many of the filesystem functions we will be using return Result<_>, this can quickly get out of hand. Please use the Rust `?` syntax for propagating errors. I have the following structure for my program which is recommended but not mandatory.
+
+```rust
+// Result is aliased to std::io::Result for all these functions.
+
+/// Runs program, handles errors and returns.
+main() -> Result<()>
+
+/// Iterate through file paths, returning only those that match our pattern.
+/// Notice that this fuction cannot error.
+fn get_matches(paths: Vec<PathBuf>, pattern: Regex) -> Vec<PathBuf>
+
+/// Recurse through the directory structure returning all files in all directories.
+fn get_directories(dir: ReadDir) -> Result<Vec<PathBuf>>
+
+/// Given the command line arguments, return a regex and the path to search through.
+/// On error, prints message to stderr and returns None.
+/// Errors: Not enough or too many arguments.
+///         Bad regular expression pattern.
+fn parse_args(args: Vec<String>) -> Option<(Regex, PathBuf)>
+```
 
 ### Testing
 Testing programs that iteract with the Operating Systems is far more difficult than testing pure code. Therefore, I recommend
