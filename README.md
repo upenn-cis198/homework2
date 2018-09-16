@@ -31,6 +31,19 @@ So for simplicity, as long you're using the Rust Regex matcher you're doing it r
 
 This assignment is vague on purpose. Feel free to implement things as ou wish as long as you handle all errors. The answer to most questions you may have about the specification will be: Do something reasonable.
 
+Please observe how in this example, we can also match at the directory structure, that is, "any file ending with `.rs` under a `src/` directory.
+
+```rust
+>>> ./target/debug/rust_find  "src/.*\.rs" ../
+../temp/homework1/src/lib3.rs
+../temp/homework1/src/lib2.rs
+../temp/homework1/src/lib.rs
+../homework1/src/lib3.rs
+../homework1/src/lib2.rs
+../homework1/src/lib.rs
+../rust_find/src/main.rs
+```
+
 ### Input
 As input we receive 2 command lines argument from the user, a `pattern` and a `root_dir`. Any other number of arguments is an error. The pattern must be a valid Rust Regex, and root_dir must be a valid directory. Otherwise these are errors.
 
